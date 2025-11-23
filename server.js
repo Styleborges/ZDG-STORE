@@ -17,7 +17,6 @@ app.use(express.json());
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-// monta prompt com contexto simples
 function montarPrompt(systemPrompt, history = [], userMsg) {
   let txt = `${systemPrompt}\n\n`;
   for (const msg of history) {
@@ -37,24 +36,21 @@ app.post("/api/chat", async (req, res) => {
     }
 
     const systemPrompt = `
-Você é o Borges IA, um assistente profissional em português do Brasil.
-Responda de forma clara, objetiva e organizada em tópicos quando fizer sentido.
-Você ajuda principalmente com:
-- programação (JS, Node, HTML/CSS, APIs)
-- Roblox / scripts
-- estudos e dúvidas gerais de tecnologia.
-
-Se não tiver certeza de algo, explique as limitações.
+Você é o Borges IA, um assistente em português do Brasil.
+Responda de forma clara, direta e organizada.
+Ajude com:
+- programação (JavaScript, Node, HTML, CSS)
+- Roblox
+- dúvidas gerais de tecnologia e estudos
     `.trim();
 
     const prompt = montarPrompt(systemPrompt, history, message);
-
     const result = await model.generateContent(prompt);
     const reply = result.response.text();
 
     res.json({ reply });
   } catch (err) {
-    console.error("Erro no /api/chat:", err);
+    console.error("Erro em /api/chat:", err);
     res.status(500).json({ error: "Erro ao conversar com o Gemini." });
   }
 });
