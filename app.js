@@ -21,7 +21,8 @@ let currentUser = null;
 let history = [];
 
 // BACKEND
-const backendUrl = "https://chat-ia-site-io.onrender.com";
+const backendUrl = "const backendUrl = "https://chat-ia-site-io.onrender.com/api/chat";
+";
 
 // UI HELPERS
 function setUser(user) {
