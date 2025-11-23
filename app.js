@@ -2,7 +2,6 @@
 const loginPage = document.getElementById("loginPage");
 const chatPage = document.getElementById("chatPage");
 
-const googleBtn = document.getElementById("googleBtn");
 const guestBtn = document.getElementById("guestBtn");
 const emailForm = document.getElementById("emailForm");
 const emailInput = document.getElementById("emailInput");
@@ -21,13 +20,10 @@ const sendBtn = document.getElementById("sendBtn");
 let currentUser = null;
 let history = [];
 
-// Firebase Auth (do firebase-auth.js)
-const { auth, signInWithGoogle, onAuthStateChanged, signOut } = window.borgesAuth;
-
-// Backend
+// BACKEND
 const backendUrl = "http://localhost:3000/api/chat";
 
-// ===== UI HELPERS =====
+// UI HELPERS
 function setUser(user) {
   currentUser = user;
   userNameSpan.textContent = user.name;
@@ -62,27 +58,7 @@ function addWelcome() {
   addMessage(`Fala, ${name}! 👋 Eu sou o Borges IA.`, "bot");
 }
 
-// ===== LOGIN GOOGLE REAL =====
-googleBtn.addEventListener("click", async () => {
-  try {
-    const result = await signInWithGoogle();
-    const u = result.user;
-
-    setUser({
-      name: u.displayName || "Usuário Google",
-      email: u.email || "sem e-mail",
-      provider: "google",
-    });
-
-    showChat();
-    addWelcome();
-  } catch (err) {
-    console.error("Erro Google:", err);
-    addMessage("Erro ao entrar com Google.", "bot");
-  }
-});
-
-// ===== LOGIN CONVIDADO =====
+// LOGIN CONVIDADO
 guestBtn.addEventListener("click", () => {
   setUser({
     name: "Convidado",
@@ -93,7 +69,7 @@ guestBtn.addEventListener("click", () => {
   addWelcome();
 });
 
-// ===== LOGIN POR E-MAIL (DEMO LOCAL, NÃO USA FIREBASE) =====
+// LOGIN POR E-MAIL (FAKE LOGIN LOCAL)
 emailForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const email = emailInput.value.trim();
@@ -116,33 +92,12 @@ emailForm.addEventListener("submit", (e) => {
   passwordInput.value = "";
 });
 
-// ===== MANTER SESSÃO GOOGLE (SE JÁ ESTIVER LOGADO) =====
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // já está logado com google
-    setUser({
-      name: user.displayName || "Usuário Google",
-      email: user.email || "sem e-mail",
-      provider: "google",
-    });
-    showChat();
-    addWelcome();
-  }
-});
-
-// ===== LOGOUT =====
-logoutBtn.addEventListener("click", async () => {
-  try {
-    if (currentUser?.provider === "google") {
-      await signOut();
-    }
-  } catch (err) {
-    console.error("Erro ao sair:", err);
-  }
+// LOGOUT
+logoutBtn.addEventListener("click", () => {
   showLogin();
 });
 
-// ===== CHAT =====
+// CHAT
 async function sendMessage() {
   const text = userInput.value.trim();
   if (!text) return;
