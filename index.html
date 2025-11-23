@@ -14,7 +14,7 @@
   <div class="bg-glow"></div>
 
   <main class="shell">
-    <!-- Lado esquerdo: branding -->
+    <!-- Branding -->
     <aside class="side">
       <div>
         <div class="brand">
@@ -29,8 +29,8 @@
           <h2>O que o Borges IA faz?</h2>
           <ul>
             <li><i class="ri-code-s-slash-line"></i> Ajuda com JavaScript, Node, HTML e CSS.</li>
-            <li><i class="ri-gamepad-line"></i> Auxilia em scripts e ideias para Roblox.</li>
-            <li><i class="ri-brain-line"></i> Explica conceitos de forma clara e didática.</li>
+            <li><i class="ri-gamepad-line"></i> Dá ideias e lógica para scripts de Roblox.</li>
+            <li><i class="ri-brain-line"></i> Explica conceitos de forma didática.</li>
           </ul>
         </div>
       </div>
@@ -40,27 +40,23 @@
       </footer>
     </aside>
 
-    <!-- Lado direito: login + chat -->
+    <!-- Login + Chat -->
     <section class="main">
       <!-- LOGIN -->
       <section id="loginPage" class="panel">
         <header class="panel-header">
           <h2>Entrar no Borges IA</h2>
-          <p>Use Google, convidado ou e-mail para acessar o chat.</p>
+          <p>Comece como convidado ou usando seu e-mail.</p>
         </header>
 
         <div class="btn-row">
-          <button id="googleBtn" class="btn google">
-            <i class="ri-google-fill"></i> Entrar com Google
-          </button>
-
           <button id="guestBtn" class="btn ghost">
             <i class="ri-user-smile-line"></i> Entrar como convidado
           </button>
         </div>
 
         <div class="divider">
-          <span>ou</span>
+          <span>ou entre com e-mail</span>
         </div>
 
         <form id="emailForm" class="form">
@@ -78,7 +74,7 @@
         </form>
 
         <p class="hint">
-          * Login por e-mail é apenas local (demo). Login Google é real via Firebase.
+          * Essa versão não valida senha; é só para identificar você no chat.
         </p>
       </section>
 
@@ -113,13 +109,12 @@
         </footer>
 
         <p class="hint">
-          Não envie dados sensíveis. Este é um ambiente de testes do Borges IA.
+          Não envie dados sensíveis. Ambiente de testes do Borges IA.
         </p>
       </section>
     </section>
   </main>
 
-  <script type="module" src="firebase-auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
