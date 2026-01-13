@@ -1,120 +1,602 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <title>Borges IA – Assistente</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZDG | Zona De Guerra Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;700;800&family=Rajdhani:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- DESIGN SYSTEM (TEMA OCEANO PROFUNDO) --- */
+        :root {
+            --neon-blue: #00f2ff;       /* Ciano Elétrico (Destaque) */
+            --deep-ocean: #0044ff;      /* Azul Profundo (Secundário) */
+            --dark-navy: #020b14;       /* Fundo quase preto */
+            --surface: rgba(4, 22, 43, 0.75); /* Vidro Naval */
+            --surface-border: rgba(0, 242, 255, 0.15);
+            --text-main: #e0f7ff;
+            --text-muted: #8ab4cc;
+            --success: #00ff9d;
+            --danger: #ff2a6d;
+        }
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <link rel="stylesheet" href="style.css" />
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--dark-navy);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Padrão de Grid Tático (CSS Puro, sem imagem externa para não quebrar) */
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, rgba(0, 68, 255, 0.15), transparent 70%);
+            background-size: 40px 40px, 40px 40px, 100% 100%;
+        }
+
+        /* Títulos em Oxanium parecem mais "Militar/Futurista" */
+        h1, h2, h3, .brand-font { font-family: 'Oxanium', cursive; text-transform: uppercase; }
+
+        /* Utilitários */
+        .hidden { display: none !important; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        
+        /* Animação de entrada suave */
+        .fade-in { animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* --- BOTÕES --- */
+        .btn {
+            border: none;
+            cursor: pointer;
+            font-family: 'Oxanium', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 12px 24px;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
+        }
+
+        .btn-primary:hover {
+            background: var(--neon-blue);
+            color: var(--dark-navy);
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-discord {
+            background: #5865F2;
+            color: white;
+            border-radius: 4px; /* Discord usa cantos arredondados, mantendo fiel */
+            clip-path: none; 
+            font-size: 0.9rem;
+            display: flex; gap: 8px; align-items: center;
+        }
+        .btn-discord:hover { background: #4752c4; }
+
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            height: 100vh;
+            width: 100%;
+            position: fixed;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .login-box {
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            padding: 3rem;
+            width: 90%;
+            max-width: 480px;
+            text-align: center;
+            position: relative;
+            /* Borda brilhante apenas no topo */
+            border-top: 3px solid var(--neon-blue);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .login-box::before {
+            content: "SYSTEM LOGIN // ZDG";
+            position: absolute;
+            top: -12px; left: 20px;
+            background: var(--dark-navy);
+            padding: 0 10px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-family: 'Oxanium';
+            border: 1px solid var(--surface-border);
+        }
+
+        .logo-area h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(180deg, #fff, var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0;
+            letter-spacing: -2px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #334;
+            padding: 15px;
+            color: #fff;
+            font-family: 'Oxanium';
+            font-size: 1.1rem;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
+        }
+
+        /* --- DASHBOARD --- */
+        #dashboard { max-width: 1280px; margin: 0 auto; padding: 20px; }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, var(--surface) 0%, rgba(4,22,43,0.4) 100%);
+            border-bottom: 1px solid var(--surface-border);
+            padding: 15px 30px;
+            margin-bottom: 40px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .avatar-placeholder {
+            width: 40px; height: 40px;
+            background: var(--neon-blue);
+            color: var(--dark-navy);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold;
+            clip-path: polygon(30% 0, 100% 0, 100% 70%, 70% 100%, 0 100%, 0 30%);
+        }
+
+        /* --- GRID DE PRODUTOS --- */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid var(--neon-blue);
+            padding-left: 15px;
+        }
+        .section-header h2 { font-size: 1.8rem; color: #fff; }
+        .section-header span { color: var(--neon-blue); font-size: 0.9rem; letter-spacing: 2px; }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 20px;
+            position: relative;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            border-color: var(--neon-blue);
+            transform: translateY(-5px);
+            background: rgba(4, 22, 43, 0.9);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Tag "Exclusivo" ou "Novo" */
+        .card-tag {
+            position: absolute;
+            top: 0; right: 0;
+            background: var(--deep-ocean);
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            font-weight: bold;
+        }
+
+        .icon-box {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+        .card:hover .icon-box { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
+
+        .card h3 { font-size: 1.2rem; margin-bottom: 5px; }
+        .card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; }
+
+        .price-tag {
+            font-family: 'Oxanium';
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* --- MODAL DE PAGAMENTO --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 999;
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .modal-content {
+            background: #050f1a;
+            border: 1px solid var(--neon-blue);
+            width: 95%; max-width: 500px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
+        }
+
+        .pix-container {
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px dashed var(--text-muted);
+            padding: 15px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .pix-container:hover { border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.1); }
+        .pix-key { font-family: monospace; color: var(--neon-blue); word-break: break-all; }
+
+        /* --- TOAST --- */
+        #toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--dark-navy);
+            border: 1px solid var(--neon-blue);
+            color: #fff;
+            padding: 12px 30px;
+            z-index: 2000;
+            opacity: 0; pointer-events: none;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            display: flex; align-items: center; gap: 10px;
+        }
+        #toast.active { opacity: 1; bottom: 50px; }
+
+        /* Responsividade */
+        @media(max-width: 768px) {
+            .navbar { flex-direction: column; gap: 15px; text-align: center; }
+            .section-header { flex-direction: column; align-items: flex-start; }
+            .modal-content { width: 90%; }
+        }
+    </style>
 </head>
 <body>
-  <div class="bg-glow"></div>
 
-  <main class="shell">
-    <!-- Branding -->
-    <aside class="side">
-      <div>
-        <div class="brand">
-          <div class="brand-logo">B</div>
-          <div>
-            <h1>Borges IA</h1>
-            <p>Seu copiloto para código, Roblox e estudos.</p>
-          </div>
-        </div>
+    <div id="toast"><i class="fas fa-info-circle"></i> <span id="toast-msg">Mensagem</span></div>
 
-        <div class="card">
-          <h2>O que o Borges IA faz?</h2>
-          <ul>
-            <li><i class="ri-code-s-slash-line"></i> Ajuda com JavaScript, Node, HTML e CSS.</li>
-            <li><i class="ri-gamepad-line"></i> Dá ideias e lógica para scripts de Roblox.</li>
-            <li><i class="ri-brain-line"></i> Explica conceitos de forma didática.</li>
-          </ul>
-        </div>
-      </div>
-
-      <footer class="side-footer">
-        <span>Borges IA • 2025</span>
-      </footer>
-    </aside>
-
-    <!-- Login + Chat -->
-    <section class="main">
-      <!-- LOGIN -->
-      <section id="loginPage" class="panel">
-        <header class="panel-header">
-          <h2>Entrar no Borges IA</h2>
-          <p>Comece como convidado ou usando seu e-mail.</p>
-        </header>
-
-        <div class="btn-row">
-          <button id="guestBtn" class="btn ghost">
-            <i class="ri-user-smile-line"></i> Entrar como convidado
-          </button>
-        </div>
-
-        <div class="divider">
-          <span>ou entre com e-mail</span>
-        </div>
-
-        <form id="emailForm" class="form">
-          <div class="field">
-            <label for="emailInput"><i class="ri-mail-line"></i> E-mail</label>
-            <input id="emailInput" type="email" placeholder="seuemail@exemplo.com" required />
-          </div>
-          <div class="field">
-            <label for="passwordInput"><i class="ri-lock-line"></i> Senha</label>
-            <input id="passwordInput" type="password" placeholder="********" required />
-          </div>
-          <button class="btn primary" type="submit">
-            <i class="ri-login-circle-line"></i> Entrar com e-mail
-          </button>
-        </form>
-
-        <p class="hint">
-          * Essa versão não valida senha; é só para identificar você no chat.
-        </p>
-      </section>
-
-      <!-- CHAT -->
-      <section id="chatPage" class="panel hidden">
-        <header class="chat-header">
-          <div class="user-info">
-            <div id="userAvatar" class="avatar">B</div>
-            <div>
-              <div id="userName" class="user-name">Usuário</div>
-              <div id="userEmail" class="user-email">email@example.com</div>
+    <div id="login-screen" class="flex-center">
+        <div class="login-box fade-in">
+            <div class="logo-area">
+                <h1>ZDG</h1>
+                <p style="color:var(--text-muted); letter-spacing: 5px; font-weight:bold;">ZONA DE GUERRA</p>
             </div>
-          </div>
 
-          <button id="logoutBtn" class="btn icon" title="Sair">
-            <i class="ri-logout-circle-r-line"></i>
-          </button>
-        </header>
+            <div class="input-wrapper">
+                <input type="text" id="discordNick" class="input-field" placeholder="DIGITE SEU USER DO DISCORD" autocomplete="off">
+            </div>
 
-        <section id="messages" class="messages"></section>
+            <button onclick="login()" class="btn btn-primary" style="width:100%">ACESSAR ARSENAL</button>
+            <p style="margin-top: 15px; font-size: 0.8rem; color: #556;">Acesso restrito a membros autorizados.</p>
+        </div>
+    </div>
 
-        <footer class="chat-input">
-          <input
-            id="userInput"
-            type="text"
-            placeholder="Digite sua mensagem e pressione Enter..."
-            autocomplete="off"
-          />
-          <button id="sendBtn" class="btn send">
-            <i class="ri-send-plane-fill"></i>
-          </button>
-        </footer>
+    <div id="dashboard" class="hidden">
+        
+        <nav class="navbar fade-in">
+            <div class="brand-font" style="font-size: 1.5rem;">
+                <span style="color:var(--neon-blue)">ZDG</span> STORE
+            </div>
 
-        <p class="hint">
-          Não envie dados sensíveis. Ambiente de testes do Borges IA.
-        </p>
-      </section>
-    </section>
-  </main>
+            <div class="user-profile">
+                <div class="avatar-placeholder"><i class="fas fa-user"></i></div>
+                <div style="line-height: 1.2;">
+                    <span id="userDisplay" style="display:block; font-weight:bold; color:#fff;">Jogador</span>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">Membro Verificado</span>
+                </div>
+            </div>
 
-  <script src="app.js"></script>
+            <div style="display:flex; gap:10px;">
+                <a href="#" class="btn btn-discord" style="text-decoration: none; padding: 8px 15px;">
+                    <i class="fab fa-discord"></i> DISCORD
+                </a>
+                <button onclick="logout()" class="btn" style="padding: 8px; border:1px solid #333; color: #cc5555;">
+                    <i class="fas fa-power-off"></i>
+                </button>
+            </div>
+        </nav>
+
+        <div class="section-header fade-in">
+            <h2>ARSENAL LETAL</h2>
+            <span>// CLASSE S</span>
+        </div>
+
+        <div class="products-grid fade-in">
+            <div class="card">
+                <div class="card-tag">META</div>
+                <div class="icon-box"><i class="fas fa-skull"></i></div>
+                <h3>FUZIL M4A1 MARINE</h3>
+                <p>Skin camuflada oceânica com silenciador integrado. Dano elevado.</p>
+                <span class="price-tag">R$ 12,00</span>
+                <button onclick="openModal('M4A1 Marine', 12.00)" class="btn btn-primary">COMPRAR</button>
+            </div>
+
+            <div class="card">
+                <div class="icon-box"><i class="fas fa-crosshairs"></i></div>
+                <h3>SNIPER L115A3</h3>
+                <p>Precisão cirúrgica. One shot, one kill. Acompanha mira 8x.</p>
+                <span class="price-tag">R$ 18,00</span>
+                <button onclick="openModal('Sniper L115A3', 18.00)" class="btn btn-primary">COMPRAR</button>
+            </div>
+
+            <div class="card">
+                <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+                <h3>COLETE PESADO ZDG</h3>
+                <p>Proteção balística nível 4. Tanka tiros de fuzil.</p>
+                <span class="price-tag">R$ 10,00</span>
+                <button onclick="openModal('Colete Pesado', 10.00)" class="btn btn-primary">COMPRAR</button>
+            </div>
+
+            <div class="card">
+                <div class="icon-box"><i class="fas fa-bolt"></i></div>
+                <h3>GLOCK AUTOMÁTICA</h3>
+                <p>Pistola com seletor de rajada. Ideal para confrontos de perto.</p>
+                <span class="price-tag">R$ 8,50</span>
+                <button onclick="openModal('Glock Auto', 8.50)" class="btn btn-primary">COMPRAR</button>
+            </div>
+        </div>
+
+        <div class="section-header fade-in" style="margin-top: 50px;">
+            <h2 style="color: var(--success)">RECURSOS FINANCEIROS</h2>
+            <span style="color: var(--success)">// DINHEIRO SUJO</span>
+        </div>
+        <style>.card.money:hover { border-color: var(--success); } .card.money:hover .icon-box { color: var(--success); text-shadow: 0 0 15px var(--success); }</style>
+
+        <div class="products-grid fade-in">
+            <div class="card money">
+                <div class="icon-box"><i class="fas fa-sack-dollar"></i></div>
+                <h3>$100.000 CASH</h3>
+                <p>Pacote inicial para comprar carros e armas básicas.</p>
+                <span class="price-tag" style="color:var(--success)">R$ 15,00</span>
+                <button onclick="openModal('100k Cash', 15.00)" class="btn btn-primary" style="border-color:var(--success); color:var(--success)">ADQUIRIR</button>
+            </div>
+
+            <div class="card money">
+                <div class="card-tag" style="background:var(--success); color:#000;">POPULAR</div>
+                <div class="icon-box"><i class="fas fa-briefcase"></i></div>
+                <h3>$500.000 CASH</h3>
+                <p>Dinheiro suficiente para fundar sua própria facção.</p>
+                <span class="price-tag" style="color:var(--success)">R$ 45,00</span>
+                <button onclick="openModal('500k Cash', 45.00)" class="btn btn-primary" style="border-color:var(--success); color:var(--success)">ADQUIRIR</button>
+            </div>
+        </div>
+
+        <div class="fade-in" style="margin-top: 60px; border-top: 1px solid #222; padding-top: 20px;">
+            <h3 style="color: #555; font-size: 0.9rem;">SEUS REGISTROS RECENTES</h3>
+            <div id="history-container" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                </div>
+        </div>
+    </div>
+
+    <div id="modal-pagamento" class="modal-overlay hidden">
+        <div class="modal-content fade-in">
+            <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
+                <h3 style="color:#fff;">CONFIRMAR AQUISIÇÃO</h3>
+                <button onclick="closeModal()" style="background:none; border:none; color:#555; cursor:pointer;"><i class="fas fa-times fa-lg"></i></button>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 20px;">
+                <p style="color:var(--text-muted); font-size:0.9rem;">ITEM SELECIONADO</p>
+                <h2 id="modal-item" style="color:var(--neon-blue); font-size:1.8rem; margin: 5px 0;">NOME DO ITEM</h2>
+                <h3 id="modal-price" style="color:#fff;">R$ 00,00</h3>
+            </div>
+
+            <div class="pix-container" onclick="copyPix()">
+                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <span style="font-size: 0.8rem; color:#888;">CHAVE PIX (CLIQUE PARA COPIAR)</span>
+                    <i class="fas fa-copy" style="color:var(--neon-blue)"></i>
+                </div>
+                <div class="pix-key">39505f23-b744-44d1-a8d8-1d1b456b2504</div>
+            </div>
+
+            <button id="btn-confirmar" onclick="confirmPayment()" class="btn btn-primary" style="width:100%; background: var(--neon-blue); color: #000;">
+                JÁ REALIZEI O PAGAMENTO
+            </button>
+
+            <div id="payment-success" class="hidden" style="text-align: center; margin-top: 20px;">
+                <div style="color: var(--success); font-size: 3rem; margin-bottom: 10px;"><i class="fas fa-check-circle"></i></div>
+                <p style="color:#fff; font-weight: bold;">PEDIDO ENVIADO!</p>
+                <div style="background:#000; border: 1px solid #333; padding: 10px; margin-top: 10px;">
+                    <small style="color:#666; display:block;">SEU TOKEN DE RESGATE:</small>
+                    <span id="final-token" style="font-family:monospace; color:var(--neon-blue); font-size:1.2rem; letter-spacing: 2px;">---</span>
+                </div>
+                <p style="font-size: 0.8rem; color:#666; margin-top: 10px;">Tire print e envie no canal de compras.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO
+        // IMPORTANTE: Troque a URL abaixo pela sua se tiver mudado
+        const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1455701150232744160/KMjlr0_hErGYRrgN5AMKa2KSXluZHm_fZW8WWZE9PN3YvtBepZWuQ-ACvCQsE_bN6Na6";
+        
+        // ESTADO
+        let currentUser = null;
+        let currentItem = null;
+        let currentPrice = 0;
+
+        // SISTEMA DE LOGIN
+        function login() {
+            const nick = document.getElementById('discordNick').value.trim();
+            if(!nick) return showToast("Digite seu nick do Discord!", "error");
+
+            currentUser = nick;
+            document.getElementById('userDisplay').innerText = nick;
+            
+            // Transição de tela
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            
+            loadHistory();
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        // MODAL E COMPRA
+        function openModal(item, price) {
+            currentItem = item;
+            currentPrice = price;
+
+            document.getElementById('modal-item').innerText = item;
+            document.getElementById('modal-price').innerText = `R$ ${price.toFixed(2)}`;
+            
+            // Resetar visual do modal
+            document.getElementById('btn-confirmar').classList.remove('hidden');
+            document.getElementById('payment-success').classList.add('hidden');
+            
+            document.getElementById('modal-pagamento').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-pagamento').classList.add('hidden');
+        }
+
+        function copyPix() {
+            navigator.clipboard.writeText("39505f23-b744-44d1-a8d8-1d1b456b2504");
+            showToast("Chave PIX copiada com sucesso!");
+        }
+
+        function confirmPayment() {
+            const token = "ZDG-" + Math.random().toString(36).substr(2, 6).toUpperCase();
+            
+            // UI Update
+            document.getElementById('btn-confirmar').classList.add('hidden');
+            document.getElementById('payment-success').classList.remove('hidden');
+            document.getElementById('final-token').innerText = token;
+            
+            // Salvar no Histórico
+            saveToHistory(currentItem, currentPrice, token);
+
+            // Enviar Log
+            sendWebhook(token);
+        }
+
+        // HISTÓRICO LOCAL
+        function saveToHistory(item, price, token) {
+            let history = JSON.parse(localStorage.getItem('zdg_history') || "[]");
+            history.unshift({
+                item: item,
+                price: price,
+                token: token,
+                date: new Date().toLocaleTimeString()
+            });
+            localStorage.setItem('zdg_history', JSON.stringify(history));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const container = document.getElementById('history-container');
+            const history = JSON.parse(localStorage.getItem('zdg_history') || "[]");
+            
+            container.innerHTML = history.length ? "" : "<div style='color:#444; font-style:italic;'>Nenhum registro encontrado.</div>";
+
+            history.slice(0, 5).forEach(h => {
+                container.innerHTML += `
+                    <div style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--neon-blue); padding: 10px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span style="color:#fff; font-weight:bold;">${h.item}</span>
+                            <span style="display:block; font-size:0.75rem; color:#666;">${h.date}</span>
+                        </div>
+                        <span style="font-family:monospace; color:var(--neon-blue);">${h.token}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // WEBHOOK DISCORD
+        function sendWebhook(token) {
+            const embed = {
+                username: "ZDG STORE BOT",
+                avatar_url: "https://cdn-icons-png.flaticon.com/512/2965/2965302.png", // Ícone genérico de radar
+                embeds: [{
+                    title: "🛒 NOVA VENDA APROVADA",
+                    color: 38891, // Cor Ciano Decimal
+                    description: `O usuário **${currentUser}** reportou um pagamento.`,
+                    fields: [
+                        { name: "📦 Item", value: currentItem, inline: true },
+                        { name: "💰 Valor", value: `R$ ${currentPrice.toFixed(2)}`, inline: true },
+                        { name: "🔑 Token de Segurança", value: `\`${token}\``, inline: false }
+                    ],
+                    footer: { text: "Sistema ZDG | Zona de Guerra" },
+                    timestamp: new Date()
+                }]
+            };
+
+            fetch(DISCORD_WEBHOOK, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(embed)
+            });
+        }
+
+        // UTILITÁRIO
+        function showToast(msg, type='info') {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.classList.add('active');
+            
+            if(type === 'error') t.style.borderColor = 'red';
+            else t.style.borderColor = 'var(--neon-blue)';
+
+            setTimeout(() => t.classList.remove('active'), 3000);
+        }
+    </script>
 </body>
 </html>
